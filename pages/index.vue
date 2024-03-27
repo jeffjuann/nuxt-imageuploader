@@ -156,7 +156,6 @@
           Image
         </label>
         <img :src="url" class="object-cover rounded-md" />
-        <span class="text-sm font-medium leading-none text-red-500">{{ errors.image }}</span>
       </div>
   </Card>
 </template>
