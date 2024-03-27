@@ -1,15 +1,18 @@
 <script setup lang="ts">
+  import { useForm, useField } from 'vee-validate';
+  import { usePageStatusStore } from '~/store/page-status';
+  import axios from 'axios';
 
   definePageMeta({
     title: 'Upload',
     description: 'Upload your image in this page.'
   });
 
-  import { useForm, useField } from 'vee-validate';
+  const status = usePageStatusStore();
+  let url = useState('url', () => '');
 
   const MAX_FILE_SIZE = 5000000;
   const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
   const { handleSubmit, errors, setErrors, isSubmitting } = useForm();
   const { value: context } = useField('context');
   const { value: filename } = useField('filename');
@@ -71,15 +74,26 @@
       return;
     }
 
-    console.log(value);
-    resetForm();
-    image.value = undefined;
+    const formData = new FormData();
+    formData.append('context', value.context);
+    formData.append('filename', value.filename);
+    formData.append('file', value.image);
+    try
+    {
+      const { data } = await axios.post('http://localhost:8080/images/upload', formData);
+      url.value = data.url;
+      status.setSucess();
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
   });
 
 </script>
 
 <template>
-  <Card title="Upload" description="Upload your image here" class="w-[320px]">
+  <Card v-if="status.value === 'uploading'" title="Upload" description="Upload your image here" class="w-[320px]">
     <form class="space-y-4" @submit="onSubmit">
       <div class="flex flex-col gap-2">
         <label
@@ -134,4 +148,16 @@
       <Button type="submit" :disabled="isSubmitting">{{ !isSubmitting ? "Upload" : "Loading ..." }}</Button>
     </form>
   </Card>
-</template>
+
+  <Card v-else class="w-[320px] text-center" title="Upload Success" description="Your image has been uploaded successfully">
+    <div class="flex flex-col gap-2">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Image
+        </label>
+        <img :src="url" class="object-cover rounded-md" />
+        <span class="text-sm font-medium leading-none text-red-500">{{ errors.image }}</span>
+      </div>
+  </Card>
+</template>~/store/page-status

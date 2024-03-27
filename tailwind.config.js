@@ -13,7 +13,10 @@ export default {
       colors: {
         'primary': '#00DC82',
         'primary-foreground': '#000000',
-      }
+        'muted': '#F4F4F5',
+        'muted-foreground': '#71717A',
+      },
+
     },
   },
   plugins: [],
