@@ -12,4 +12,9 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  runtimeConfig: {
+    public: {
+      IMAGE_UPLOAD_URL: process.env.IMAGE_UPLOAD_URL,
+    }
+  },
 })

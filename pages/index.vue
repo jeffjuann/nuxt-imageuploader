@@ -32,8 +32,6 @@
   {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    console.log(value);
-
     if(value.context === undefined)
     {
       setErrors({
@@ -80,7 +78,8 @@
     formData.append('file', value.image);
     try
     {
-      const { data } = await axios.post('http://localhost:8080/images/upload', formData);
+      const config = useRuntimeConfig();
+      const { data } = await axios.post(config.public.IMAGE_UPLOAD_URL as string, formData);
       url.value = data.url;
       status.setSucess();
     }
@@ -160,4 +159,4 @@
         <span class="text-sm font-medium leading-none text-red-500">{{ errors.image }}</span>
       </div>
   </Card>
-</template>~/store/page-status
+</template>
